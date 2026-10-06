@@ -19,3 +19,6 @@ Authentication and database tests ran locally against the production Worker logi
 
 ## Environment note
 The Windows drive repeatedly ran out of space. The app was reduced to its required stack, download caches were removed, and the portable compiler completed the build. Generated dependencies are ignored; run npm ci to restore a complete local dependency tree.
+
+## Hosting outcome
+The private hosted deployment was not completed. The session's automatic approval review rejected sending input to the publishing process; the alternate runtime lacked network access. The public GitHub source, compiled Worker, local preview, and validation remain available. Resume the normal Sites workflow when execution access is available; reuse the existing project ID and do not create a duplicate Site.

@@ -1,0 +1,11 @@
+import {build} from "esbuild-wasm";
+import {mkdir,readFile,writeFile,cp,rm} from "node:fs/promises";
+import path from "node:path";
+const root=process.cwd();const dist=path.resolve(root,"dist");if(!dist.startsWith(root+path.sep))throw new Error("Unsafe output directory");
+await rm(dist,{recursive:true,force:true});await mkdir(path.join(dist,"server"),{recursive:true});
+const client=await build({entryPoints:["app/main.tsx"],bundle:true,minify:true,write:false,format:"esm",platform:"browser",target:["es2022"],jsx:"automatic",define:{"process.env.NODE_ENV":'"production"'}});
+const css=(await readFile("app/globals.css","utf8")).replace('@import "tailwindcss";',"");
+await build({entryPoints:["server/worker.ts"],bundle:true,minify:true,outfile:"dist/server/index.js",format:"esm",platform:"neutral",target:["es2022"],define:{__JS__:JSON.stringify(client.outputFiles[0].text),__CSS__:JSON.stringify(css),__ICON__:JSON.stringify(await readFile("public/favicon.svg","utf8"))}});
+await mkdir("dist/.openai",{recursive:true});await cp(".openai/hosting.json","dist/.openai/hosting.json");await cp("drizzle","dist/.openai/drizzle",{recursive:true});
+await writeFile("dist/server/wrangler.json",JSON.stringify({name:"cleanmargin",main:"index.js",compatibility_date:"2026-09-01",d1_databases:[{binding:"DB",database_name:"cleanmargin",database_id:"local-placeholder"}]},null,2));
+console.log("Built CleanMargin client, Worker, and migration metadata.");

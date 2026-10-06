@@ -1,0 +1,8 @@
+import { z } from "zod";
+const number=z.number().finite().nonnegative().max(10000000);
+const date=z.string().refine(v=>{if(v==="")return true;if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;const d=new Date(v);return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===v;},"Enter a valid date");
+export const monthSchema=z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
+export const contractSchema=z.object({id:z.string().min(1).max(80),name:z.string().trim().min(1).max(120),type:z.enum(["Office","Education","Warehouse","Community","Other"]),price:number,hours:number.max(10000),wage:number.max(1000),burden:number.max(200),supplies:number,overhead:number,target:number.max(80),renewal:date,scope:z.string().max(3000)}).strict();
+export const reviewSchema=contractSchema.extend({month:monthSchema,actualHours:number.max(10000),actualSupplies:number,actualOverhead:number,actualRevenue:number,notes:z.string().max(3000)}).strict();
+export const workspaceSchema=z.object({company:z.string().trim().min(1).max(120),contracts:z.array(contractSchema).max(100),reviews:z.array(reviewSchema).max(1200)}).strict().superRefine((data,ctx)=>{const ids=new Set(data.contracts.map(c=>c.id));if(ids.size!==data.contracts.length)ctx.addIssue({code:"custom",message:"Duplicate contract IDs"});const keys=new Set<string>();for(const r of data.reviews){const key=r.id+":"+r.month;if(!ids.has(r.id)||keys.has(key))ctx.addIssue({code:"custom",message:"Invalid or duplicate monthly review"});keys.add(key);}});
+export const saveSchema=z.object({revision:z.number().int().nonnegative(),data:workspaceSchema}).strict();

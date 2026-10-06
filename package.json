@@ -1,0 +1,32 @@
+{
+  "name": "cleanmargin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/test.mjs",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "node scripts/generate-migration.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "1.31.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "drizzle-kit": "0.31.10",
+    "drizzle-orm": "0.45.2",
+    "esbuild": "0.25.12",
+    "esbuild-wasm": "0.25.12",
+    "typescript": "5.9.3"
+  }
+}
